@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useState } from 'react';
 
 import { ContactForm } from './ContactForm/ContactForm';
@@ -7,6 +7,7 @@ import { Filter } from './Filter/Filter';
 
 const CONTACTS_KEY = 'kontacts-key';
 export const App = () => {
+  const isFirstRender = useRef(true);
   const [contacts, setContacts] = useState([]);
   const [filter, setFilter] = useState('');
 
@@ -18,10 +19,11 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    if (!contacts.length) {
-      return;
+    if (!isFirstRender.current) {
+      localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts));
+    } else {
+      isFirstRender.current = false;
     }
-    localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts));
   }, [contacts]);
 
   const handleSubmit = dataForm => {
